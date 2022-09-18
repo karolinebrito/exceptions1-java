@@ -7,17 +7,17 @@ import java.util.concurrent.TimeUnit;
 public class Reservation {
 	
 	private Integer roomNumber;
-	private Date checkin;
-	private Date checkout;
+	private Date checkIn;
+	private Date checkOut;
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	// o static garante que nao sera instanciado um novo SimpleDateFormat para
 	// cada objeto Reservation criado. Sera necessário apenas um
 	
-	public Reservation(Integer roomNumber, Date checkin, Date checkout) {
+	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
 		this.roomNumber = roomNumber;
-		this.checkin = checkin;
-		this.checkout = checkout;
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
 	}
 
 	public Integer getRoomNumber() {
@@ -28,16 +28,16 @@ public class Reservation {
 		this.roomNumber = roomNumber;
 	}
 
-	public Date getCheckin() {
-		return checkin;
+	public Date getCheckIn() {
+		return checkIn;
 	}
 
-	public Date getCheckout() {
-		return checkout;
+	public Date getCheckOut() {
+		return checkOut;
 	}
 	
 	public long duration() {
-		long diff = checkout.getTime() - checkin.getTime(); // resultado obtido em milisegundos
+		long diff = checkOut.getTime() - checkIn.getTime(); // resultado obtido em milisegundos
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 	// torna compatível;
@@ -46,9 +46,17 @@ public class Reservation {
 	// Converte o argumento em miliseconds (diff, TimeUnit.MILLISECONDS) para
 	// dias (TimeUnit.DAYS.convert)
 	
-	public void updateDates (Date checkin, Date checkout) {
-		this.checkin = checkin;
-		this.checkout = checkout;
+	public String updateDates(Date checkIn, Date checkOut) {		
+		Date now = new Date();
+		if (checkIn.before(now) || checkOut.before(now)) {
+			return "Reservation dates for update must be future dates";
+		}
+		if (!checkOut.after(checkIn)) {
+			return "Check-out date must be after check-in date";
+		}
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
+		return null;
 	}
 	
 	@Override
@@ -56,9 +64,9 @@ public class Reservation {
 		return "Reservation: Room "
 				+ roomNumber
 				+ ", check-in: "
-				+ sdf.format(checkin)
+				+ sdf.format(checkIn)
 				+ ", check-out: "
-				+ sdf.format(checkout)
+				+ sdf.format(checkOut)
 				+ ", "
 				+ duration()
 				+ " nights";
